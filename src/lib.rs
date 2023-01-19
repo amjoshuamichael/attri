@@ -10,32 +10,57 @@ use unsized_vec::UnsizedVec;
 #[cfg(not(feature = "debug"))]
 pub trait Attribute: Any + Send + Sync + 'static {
     fn type_name(&self) -> &'static str;
+    fn eq_inner(&self, other: &dyn Attribute) -> bool;
 }
 #[cfg(not(feature = "debug"))]
 impl<T> Attribute for T
 where
-    T: Any + Send + Sync + 'static,
+    T: Any + Send + Sync + PartialEq + 'static,
 {
     fn type_name(&self) -> &'static str {
         type_name::<T>()
+    }
+
+    fn eq_inner(&self, other: &dyn Attribute) -> bool {
+        if let Some(other) = (other as &dyn Any).downcast_ref::<T>() {
+            self == other
+        } else {
+            false
+        }
     }
 }
 
 #[cfg(feature = "debug")]
 pub trait Attribute: Any + Send + Sync + 'static + Debug {
     fn type_name(&self) -> &'static str;
+    fn eq_inner(&self, other: &dyn Attribute) -> bool;
 }
 #[cfg(feature = "debug")]
 impl<T> Attribute for T
 where
-    T: Any + Send + Sync + 'static + Debug,
+    T: Any + Send + Sync + PartialEq + Clone + 'static + Debug,
 {
     fn type_name(&self) -> &'static str {
         type_name::<T>()
     }
+
+    fn eq_inner(&self, other: &dyn Attribute) -> bool {
+        if let Some(other) = (other as &dyn Any).downcast_ref::<T>() {
+            self == other
+        } else {
+            false
+        }
+    }
 }
 
-#[derive(Default)]
+impl PartialEq for dyn Attribute {
+    fn eq(&self, other: &Self) -> bool {
+        self.eq_inner(other)
+    }
+}
+impl Eq for dyn Attribute {}
+
+#[derive(Default, PartialEq, Eq)]
 pub struct Attributes {
     inner: UnsizedVec<dyn Attribute>,
 }
