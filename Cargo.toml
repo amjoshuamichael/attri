@@ -1,0 +1,12 @@
+[package]
+name = "attri"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+unsized-vec = "0.0.2-alpha.5"
+emplacable = "0.1.0-alpha.5"
+
+[features]
+default = ["debug"]
+debug = []
