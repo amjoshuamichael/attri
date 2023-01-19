@@ -1,4 +1,4 @@
-# Attri ✏️
+# Attri  ✏️
 
 A tiny rust crate for creating strongly-typed information, without specifying the information at compile time.
 
@@ -33,3 +33,5 @@ assert_eq!(
 ```
 
 This is useful if you are creating an api where a user can modify some value, send it back into your code, might eventually see it come out of some other function, and the user needs to be aware of some information about that value.
+
+Forcing each of your attributes to implement `Debug` is optional. (set `default-features` to `false`)

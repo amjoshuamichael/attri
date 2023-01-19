@@ -3,12 +3,29 @@
 #![feature(arc_unwrap_or_clone)]
 
 use std::any::{type_name, Any, TypeId};
+#[cfg(feature = "debug")]
 use std::fmt::Debug;
 use unsized_vec::UnsizedVec;
 
+#[cfg(not(feature = "debug"))]
+pub trait Attribute: Any + Send + Sync + 'static {
+    fn type_name(&self) -> &'static str;
+}
+#[cfg(not(feature = "debug"))]
+impl<T> Attribute for T
+where
+    T: Any + Send + Sync + 'static,
+{
+    fn type_name(&self) -> &'static str {
+        type_name::<T>()
+    }
+}
+
+#[cfg(feature = "debug")]
 pub trait Attribute: Any + Send + Sync + 'static + Debug {
     fn type_name(&self) -> &'static str;
 }
+#[cfg(feature = "debug")]
 impl<T> Attribute for T
 where
     T: Any + Send + Sync + 'static + Debug,
@@ -23,6 +40,7 @@ pub struct Attributes {
     inner: UnsizedVec<dyn Attribute>,
 }
 
+#[cfg(feature = "debug")]
 impl Debug for Attributes {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut attributes = self.inner.iter();
