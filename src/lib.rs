@@ -1,11 +1,9 @@
+#![doc = include_str!("../README.md")]
 #![feature(trait_upcasting)]
 #![feature(arc_unwrap_or_clone)]
 
 use std::any::{type_name, Any, TypeId};
 use std::fmt::Debug;
-use std::sync::Arc;
-
-use emplacable::arc_new_with;
 use unsized_vec::UnsizedVec;
 
 pub trait Attribute: Any + Send + Sync + 'static + Debug {
@@ -20,6 +18,7 @@ where
     }
 }
 
+#[derive(Default)]
 pub struct Attributes {
     inner: UnsizedVec<dyn Attribute>,
 }
